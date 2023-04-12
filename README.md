@@ -1,2 +1,2 @@
 # Unity_JumpingCat
-Game programming homwork upload
+Game programming homework upload
