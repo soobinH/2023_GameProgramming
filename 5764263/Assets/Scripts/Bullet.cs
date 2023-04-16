@@ -6,13 +6,15 @@ public class Bullet : MonoBehaviour
 {
     private const float moveSpeed = 10.0f; // 총알 속도
 
-    void Start()
-    {
-    }
-
     void Update()
     {
-        // 총알 발사
+        fireBullet();
+    }
+
+    // 총알 발사
+    void fireBullet()
+    {
+
         float moveY = moveSpeed * Time.deltaTime; // 스피드(Y축으로 이동함)
         transform.Translate(0, moveY, 0); // 이동
 

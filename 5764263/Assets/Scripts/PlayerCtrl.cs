@@ -2,22 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
-
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerCtrl : MonoBehaviour
 {
     Rigidbody2D rigidBody;
     Vector2 vector;
     Transform Player;
+    GameObject PrintHP;
 
-    public const float moveSpeed = 5.0f;
+    int HP = 3;
 
-    public GameObject firePrefab;
-    GameObject fireLoc;
+    const float moveSpeed = 5.0f; // 플레이어 이동 속도
 
-    bool canFire = true;
-    const float fireDelay = 0.5f; // 총알 발사 딜레이 시간(쿨타임)
+    [SerializeField]
+    GameObject bullet; // 총알 오브젝트
+    GameObject fireLoc; // 발사 위치 오브젝트
+
+    bool canFire = true; // 발사 가능 여부 판단
+    const float fireDelay = 0.3f; // 총알 발사 딜레이 시간(쿨타임)
     float fireTimer = 0; // 총알 발사 후 시간 세기
 
 
@@ -27,6 +31,7 @@ public class PlayerCtrl : MonoBehaviour
         this.rigidBody = GetComponent<Rigidbody2D>();
         this.Player = GetComponent<Transform>();
         this.fireLoc = GameObject.Find("FireLocation");
+        this.PrintHP = GameObject.Find("HP");
    
     }
 
@@ -36,7 +41,13 @@ public class PlayerCtrl : MonoBehaviour
         PlayerMove();
         FireControl();
         PlayerRotation();
+        printHP();
 
+        // HP 다 닳았을 떄 게임 오버
+        if(HP <= 0)
+        {
+            SceneManager.LoadScene("GameoverScene");
+        }
     }
 
     // 플레이어 이동
@@ -82,11 +93,28 @@ public class PlayerCtrl : MonoBehaviour
             {
                 // 클릭하면 총알 생성
                 if (Input.GetMouseButtonDown(0))
-                    Instantiate(firePrefab, fireLoc.transform.position, fireLoc.transform.rotation);
+                    Instantiate(bullet, fireLoc.transform.position, fireLoc.transform.rotation);
             }
 
 
             fireTimer += Time.deltaTime;
+        }
+    }
+
+    // 플레이어 HP UI 출력
+    void printHP()
+    {
+        this.PrintHP.GetComponent<Text>().text = "X " + this.HP.ToString();
+    }
+
+    // 적과 충돌 처리
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 충돌할 경우
+        if(collision.gameObject.tag == "Enemy")
+        {
+            HP--; // HP 감소
+            Destroy(collision.gameObject); // 해당 적 오브젝트 삭제
         }
     }
 }
